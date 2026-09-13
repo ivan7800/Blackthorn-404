@@ -1,4 +1,4 @@
-name: Reconstruct audited release
+name: Reconstruct audited runtime
 
 on:
   push:
@@ -17,21 +17,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Reconstruct exact audited ZIP
+      - name: Reconstruct audited runtime
         shell: bash
         run: |
           set -euo pipefail
           test -f .upload/READY
-          cat .upload/release.b64.part* > /tmp/blackthorn-release.b64
-          base64 -d /tmp/blackthorn-release.b64 > /tmp/blackthorn-release.zip
-          echo 'f12f79e30462aba1c661014000fd3bb17caa10ef1705b3479a82775290259ad5  /tmp/blackthorn-release.zip' | sha256sum -c -
+          cat .upload/runtime.b64.part* > /tmp/blackthorn-runtime.b64
+          base64 -d /tmp/blackthorn-runtime.b64 > /tmp/blackthorn-runtime.tar.xz
+          echo 'a0710d38ab9f24281710bda5fc871914e665dbfc447c6e680358668bb198e4d3  /tmp/blackthorn-runtime.tar.xz' | sha256sum -c -
           rm -rf /tmp/release
           mkdir -p /tmp/release
-          unzip -q /tmp/blackthorn-release.zip -d /tmp/release
+          tar -xJf /tmp/blackthorn-runtime.tar.xz -C /tmp/release
           rsync -a --delete --exclude='.git/' --exclude='.github/' --exclude='.upload/' /tmp/release/ ./
           rm -rf .upload
 
-      - name: Commit release
+      - name: Commit runtime
         shell: bash
         run: |
           set -euo pipefail
