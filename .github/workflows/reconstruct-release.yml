@@ -1,0 +1,42 @@
+name: Reconstruct audited release
+
+on:
+  push:
+    paths:
+      - '.upload/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct exact audited ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .upload/READY
+          cat .upload/release.b64.part* > /tmp/blackthorn-release.b64
+          base64 -d /tmp/blackthorn-release.b64 > /tmp/blackthorn-release.zip
+          echo 'f12f79e30462aba1c661014000fd3bb17caa10ef1705b3479a82775290259ad5  /tmp/blackthorn-release.zip' | sha256sum -c -
+          rm -rf /tmp/release
+          mkdir -p /tmp/release
+          unzip -q /tmp/blackthorn-release.zip -d /tmp/release
+          rsync -a --delete --exclude='.git/' --exclude='.github/' --exclude='.upload/' /tmp/release/ ./
+          rm -rf .upload
+
+      - name: Commit release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Release Blackthorn 404 v1.1.1' || exit 0
+          git push
