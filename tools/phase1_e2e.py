@@ -1,0 +1,50 @@
+from playwright.sync_api import sync_playwright
+from pathlib import Path
+import re
+ROOT=Path(__file__).resolve().parents[1]
+html=(ROOT/'index.html').read_text(encoding='utf-8')
+html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]*>','',html)
+html=re.sub(r'<script src="js/bundle\.js\?v=[^"]+" defer></script>','',html)
+html=re.sub(r'<link rel="stylesheet"[^>]+>','',html)
+css=(ROOT/'css/app.css').read_text(encoding='utf-8')
+js=(ROOT/'js/bundle.js').read_text(encoding='utf-8')
+errors=[];results=[]
+def ok(name): results.append((name,'PASS'));print('PASS',name,flush=True)
+def close_message(page,max_clicks=16):
+    for _ in range(max_clicks):
+        if not page.locator('#messageDialog').evaluate('(e)=>e.open'): return
+        page.locator('#messageNextBtn').click();page.wait_for_timeout(20)
+    assert not page.locator('#messageDialog').evaluate('(e)=>e.open')
+with sync_playwright() as p:
+    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    page=browser.new_page(viewport={'width':1440,'height':1000})
+    page.add_init_script("""Object.defineProperty(window,'localStorage',{value:{_m:{},getItem(k){return Object.prototype.hasOwnProperty.call(this._m,k)?this._m[k]:null},setItem(k,v){this._m[k]=String(v)},removeItem(k){delete this._m[k]},clear(){this._m={}}},configurable:true});""")
+    page.goto('about:blank')
+    page.on('console',lambda m: errors.append(('console',m.type,m.text)) if m.type=='error' else None)
+    page.on('pageerror',lambda e: errors.append(('pageerror','error',str(e))))
+    page.set_content(html,wait_until='domcontentloaded');page.add_style_tag(content=css);page.add_script_tag(content=js);page.wait_for_timeout(100)
+    assert page.locator('#titleView').is_visible();ok('cold_boot_title')
+    page.locator('#newGameBtn').click();assert page.locator('#slotsView').is_visible();assert page.locator('.slot-card').count()==3;ok('new_game_slots')
+    page.locator('.slot-card').first.click();page.wait_for_timeout(100);assert page.locator('#gameView').is_visible();close_message(page);ok('launch_game')
+    x0=page.evaluate('__BT404__.engine.player.x');page.keyboard.down('ArrowRight');page.wait_for_timeout(170);page.keyboard.up('ArrowRight');x1=page.evaluate('__BT404__.engine.player.x');assert x1>x0;ok('keyboard_movement')
+    page.evaluate("()=>{const e=__BT404__.engine;e.player.x=88;e.player.y=116;e.player.facing='right'}");page.keyboard.press('KeyC');page.wait_for_timeout(20);assert page.locator('#messageDialog').evaluate('(e)=>e.open');close_message(page);assert 'letter' in page.evaluate('__BT404__.save.notes');ok('interaction_note')
+    page.evaluate("()=>{const e=__BT404__.engine;e.loadRoom('echo-priory-gate',true)}");page.wait_for_timeout(60);close_message(page);page.evaluate("()=>{const e=__BT404__.engine;const a=e.enemies[0];e.player.x=a.x-16;e.player.y=a.y;e.player.facing='right'}")
+    hp0=page.evaluate('__BT404__.engine.enemies[0].hp');page.keyboard.press('KeyZ');page.wait_for_timeout(25);hp1=page.evaluate('__BT404__.engine.enemies[0].hp');assert hp1<hp0;ok('quick_attack')
+    st0=page.evaluate('__BT404__.save.stamina');page.keyboard.press('KeyV');page.wait_for_timeout(25);st1=page.evaluate('__BT404__.save.stamina');assert st1<st0;ok('heavy_attack_stamina')
+    page.keyboard.down('KeyX');page.wait_for_timeout(10);assert page.evaluate('__BT404__.engine.guard===true && __BT404__.engine.parryTimer>0');page.keyboard.up('KeyX');assert page.evaluate('__BT404__.engine.guard===false');ok('guard_parry_window')
+    page.locator('[data-control="attack"]').dispatch_event('pointerdown',{'pointerId':2,'pointerType':'touch'});page.locator('[data-control="attack"]').dispatch_event('pointerup',{'pointerId':2,'pointerType':'touch'});ok('touch_attack_binding')
+    page.evaluate("()=>{const e=__BT404__.engine;e.sigilCooldown=0;e.save.stability=100;e.save.equippedSigil='bind-void-i';e.enemies[0].dead=false;e.enemies[0].hp=18;e.player.x=e.enemies[0].x-30;e.player.y=e.enemies[0].y}");page.keyboard.press('KeyR');page.wait_for_timeout(20);assert page.evaluate('__BT404__.engine.enemies[0].bound>0');close_message(page);ok('bind_sigil')
+    page.evaluate("()=>{const e=__BT404__.engine;if(!e.save.sigils.includes('ward-mind-i'))e.save.sigils.push('ward-mind-i');e.save.equippedSigil='ward-mind-i';e.save.perception=40;e.save.stability=100;e.sigilCooldown=0}");page.keyboard.press('KeyR');page.wait_for_timeout(20);assert page.evaluate('__BT404__.engine.perceptionSystem.wardTimer>0');close_message(page);assert 'hold-attention' in page.evaluate('__BT404__.save.achievements');ok('ward_sigil_perception')
+    page.evaluate("()=>{__BT404__.engine.loadRoom('echo-bell-chamber',true)}");page.wait_for_timeout(60);close_message(page);page.evaluate("()=>{const e=__BT404__.engine;e.player.x=145;e.player.y=38}");page.keyboard.press('KeyC');page.wait_for_timeout(20);assert page.evaluate('__BT404__.engine.bossVulnerable>4');close_message(page);ok('boss_bell_weakness')
+    page.evaluate("()=>{const e=__BT404__.engine;const b=e.enemies[0];b.hp=30;e.updateBoss(b,.016)}");page.wait_for_timeout(20);assert page.evaluate('__BT404__.engine.bossPhase===2');close_message(page);ok('boss_phase_2')
+    page.evaluate("()=>{const e=__BT404__.engine;const b=e.enemies[0];b.hp=12;e.updateBoss(b,.016)}");page.wait_for_timeout(20);assert page.evaluate('__BT404__.engine.bossPhase===3');close_message(page);ok('boss_phase_3')
+    page.evaluate("()=>{const e=__BT404__.engine;const b=e.enemies[0];b.hp=1;e.bossVulnerable=5;e.player.x=b.x-15;e.player.y=b.y;e.player.facing='right';e.attackCd=0}");page.keyboard.press('KeyZ');page.wait_for_timeout(20);close_message(page);page.wait_for_timeout(80);close_message(page);assert page.evaluate('__BT404__.save.sliceComplete===true');assert page.evaluate("__BT404__.save.room==='manor-gallery-after'");ok('boss_completion_return')
+    if page.locator('#completeDialog').evaluate('(e)=>e.open'): page.locator('#completeCloseBtn').click()
+    page.keyboard.press('Escape');page.wait_for_timeout(20);assert page.locator('#pauseDialog').evaluate('(e)=>e.open');page.locator('#resumeBtn').click();page.wait_for_timeout(20);assert not page.locator('#pauseDialog').evaluate('(e)=>e.open');ok('pause_resume')
+    page.evaluate("document.querySelector('#settingsBtn').click()");page.wait_for_timeout(10);assert page.locator('#settingsDialog').evaluate('(e)=>e.open');page.evaluate("()=>{const x=document.querySelector('#reduceMotion');x.checked=true;x.dispatchEvent(new Event('change',{bubbles:true}));}");assert page.locator('body').evaluate("e=>e.classList.contains('reduce-motion')");page.evaluate("document.querySelector('#settingsDialog').close()");ok('settings_accessibility')
+    room=page.evaluate('__BT404__.save.room');raw=page.evaluate("localStorage.getItem('blackthorn404.slot.1')");assert raw and 'sliceComplete' in raw;page.evaluate("document.querySelector('#leaveBtn').click()");page.wait_for_timeout(20);page.evaluate("document.querySelector('#continueBtn').click()");page.wait_for_timeout(20);page.evaluate("document.querySelector('.slot-card').click()");page.wait_for_timeout(80);close_message(page);assert page.evaluate('__BT404__.save.sliceComplete===true');assert page.evaluate('__BT404__.save.room')==room;ok('save_reload')
+    page.set_viewport_size({'width':390,'height':844});page.wait_for_timeout(80);assert page.locator('[data-control="attack"]').is_visible();assert page.locator('[data-control="sigil"]').is_visible();assert page.evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth+1');ok('mobile_390x844')
+    page.screenshot(path=str(ROOT/'QA_PHASE1_MOBILE.png'),full_page=True);page.set_viewport_size({'width':1440,'height':1000});page.wait_for_timeout(40);page.screenshot(path=str(ROOT/'QA_PHASE1_DESKTOP.png'),full_page=True)
+    assert not errors,errors;ok('zero_console_page_errors');browser.close()
+print('PHASE1_E2E_PASS')
+for name,status in results: print(f'{status:4} {name}')
