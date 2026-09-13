@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b090d">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Blackthorn 404">
+  <meta name="description" content="Blackthorn 404: The Unremembered — original 16-bit psychological horror adventure for the browser.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Blackthorn 404: The Unremembered</title>
+  <link rel="manifest" href="manifest.webmanifest?v=1.1.1">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css?v=1.1.1">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to game</a>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar">
+    <button id="homeBtn" class="wordmark" type="button" aria-label="Blackthorn 404 home"><span>BLACKTHORN</span><b>404</b><small>THE UNREMEMBERED</small></button>
+    <div class="top-actions"><span id="pwaStatus" class="pwa-status" role="status" aria-live="polite">WEB</span><button id="installBtn" class="ghost install-btn hidden" type="button">INSTALL</button><button id="helpBtn" class="ghost" type="button">HELP</button><button id="settingsBtn" class="ghost" type="button">SETTINGS</button></div>
+  </header>
+
+  <main id="main">
+    <section id="titleView" class="view title-view">
+      <div class="title-stage">
+        <div class="manor-art" aria-hidden="true">
+          <div class="moon"></div><div class="manor"><i></i><i></i><i></i><i></i><span></span></div><div class="rain"></div>
+        </div>
+        <div class="title-copy">
+          <p class="eyebrow">UNIVERSO 404 · SNES DARK FANTASY HORROR</p>
+          <h1>BLACKTHORN <em>404</em><small>THE UNREMEMBERED</small></h1>
+          <p class="tagline">Some houses are haunted. <strong>Blackthorn is remembering you.</strong></p>
+          <p class="lead">A dark 16-bit nightmare of ruined centuries, cursed memory and impossible architecture.</p>
+          <div class="title-actions"><button id="continueBtn" class="primary" type="button">CONTINUE</button><button id="newGameBtn" class="secondary" type="button">NEW MEMORY</button><button id="newGamePlusBtn" class="secondary ngplus-btn" type="button" disabled>NEW GAME+</button><button id="recordsBtn" class="secondary" type="button">RECORDS</button><button id="creditsBtn" class="secondary" type="button">CREDITS</button></div>
+        </div>
+      </div>
+      <div class="slice-status"><span>SNES VISUAL EDITION</span><b>108 ROOMS · 9 BOSSES · 3 ENDINGS · NEW GAME+</b><small>Local saves · accessibility · touch · offline-ready PWA</small></div>
+    </section>
+
+    <section id="slotsView" class="view slots-view hidden" aria-labelledby="slotsTitle">
+      <div class="view-head"><button id="slotsBackBtn" class="ghost" type="button">← BACK</button><div><p class="eyebrow">LOCAL MEMORY</p><h2 id="slotsTitle">Choose a save slot</h2></div></div>
+      <div id="slotGrid" class="slot-grid"></div>
+      <p class="privacy-note">Saves remain in this browser. No account, cloud sync or telemetry.</p>
+    </section>
+
+    <section id="gameView" class="view game-view hidden" aria-label="Blackthorn 404 game">
+      <div class="game-shell" id="gameShell"><div id="orientationHint" class="orientation-hint hidden" role="status">↻ Landscape gives more room for combat controls. Portrait remains fully supported.</div>
+        <div class="device-rail"><button id="leaveBtn" class="rail-btn" type="button">← TITLE</button><div class="rail-brand"><strong>BLACKTHORN <em>404</em></strong><small>DARK FANTASY · 16-BIT</small></div><button id="fullscreenBtn" class="rail-btn" type="button">⛶ FULL</button></div>
+        <div class="screen-bezel">
+          <div class="screen-glass">
+            <canvas id="gameCanvas" width="320" height="180" aria-label="Game screen"></canvas>
+            <div id="perceptionOverlay" class="perception-overlay" aria-hidden="true"></div>
+            <div id="roomLabel" class="room-label"></div>
+            <div id="bossHud" class="boss-hud hidden"><span id="bossName">BOSS</span><i><b id="bossBar"></b></i><small id="bossPhase">PHASE I</small></div>
+          </div>
+          <div class="hud-strip" aria-label="Game status">
+            <div class="meter"><span>HEALTH</span><i><b id="healthBar"></b></i><strong id="healthText">100</strong></div>
+            <div class="meter perception"><span>PERCEPTION</span><i><b id="perceptionBar"></b></i><strong id="perceptionText">100</strong></div>
+            <div class="meter stability"><span>STABILITY</span><i><b id="stabilityBar"></b></i><strong id="stabilityText">100</strong></div>
+            <div class="meter stamina"><span>STAMINA</span><i><b id="staminaBar"></b></i><strong id="staminaText">100</strong></div>
+          </div>
+          <div class="loadout-strip"><span id="weaponLabel">IRON CANDLESTICK</span><span id="combatState" class="combat-state">COMBAT READY</span><span id="perceptionState" class="perception-state">PERCEPTION STABLE</span><span id="sigilLabel">BIND + VOID + I</span></div>
+        </div>
+
+        <div class="touch-controls" aria-label="Touch controls">
+          <div class="dpad"><button data-control="up" aria-label="Up">▲</button><button data-control="left" aria-label="Left">◀</button><button data-control="down" aria-label="Down">▼</button><button data-control="right" aria-label="Right">▶</button></div>
+          <div class="center-controls"><button data-control="weapon" type="button">WEAPON ↻</button><button data-control="swap" type="button">SIGIL ↻</button><button data-control="sigils" type="button">SIGILS · F</button><button data-control="map" type="button">MAP</button><button data-control="pause" type="button">PAUSE</button><button data-control="dodge" type="button">DODGE</button></div>
+          <div class="action-pad"><button data-control="heavy" class="small-action" type="button">V<small>HEAVY</small></button><button data-control="sigil" class="small-action" type="button">R<small>SIGIL</small></button><button data-control="guard" class="action-b" type="button">B<small>GUARD</small></button><button data-control="attack" class="action-a" type="button">A<small>ATTACK</small></button><button data-control="interact" class="action-c" type="button">C<small>USE</small></button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="messageDialog" class="pixel-dialog" aria-label="Memory message"><div class="dialog-inner"><p id="messageKicker">MEMORY</p><div id="messageLines"></div><button id="messageNextBtn" class="primary" type="button">CONTINUE · C / ENTER</button></div></dialog>
+  <dialog id="pauseDialog" class="pixel-dialog" aria-labelledby="pauseTitle"><div class="dialog-inner wide"><p class="eyebrow">PAUSED</p><h2 id="pauseTitle">Blackthorn holds its breath.</h2><div class="pause-grid"><div><span>WEAPON</span><b id="pauseWeapon"></b></div><div><span>SIGIL</span><b id="pauseSigil"></b></div><div><span>ROOM</span><b id="pauseRoom"></b></div><div><span>EVIDENCE</span><b id="pauseNotes"></b></div></div><div class="dialog-actions"><button id="resumeBtn" class="primary" type="button">RESUME</button><button id="pauseArchiveBtn" class="secondary" type="button">ARCHIVE · J</button><button id="pauseRecordsBtn" class="secondary" type="button">RECORDS · K</button><button id="pauseSettingsBtn" class="secondary" type="button">SETTINGS</button></div></div></dialog>
+  <dialog id="settingsDialog" class="pixel-dialog" aria-labelledby="settingsTitle"><form method="dialog" class="dialog-inner wide"><p class="eyebrow">ACCESSIBILITY / AUDIO</p><h2 id="settingsTitle">Settings</h2><label>Music / ambience <input id="musicVolume" type="range" min="0" max="100" step="5"></label><label>FX volume <input id="fxVolume" type="range" min="0" max="100" step="5"></label><label>Perception effects <select id="perceptionFx"><option value="1">Full</option><option value="0.55">Reduced</option><option value="0.15">Minimal</option></select></label><label><input id="truthfulHud" type="checkbox"> Keep HUD values truthful</label><label><input id="reduceMotion" type="checkbox"> Reduce motion</label><label><input id="disableShake" type="checkbox"> Disable screen shake</label><label><input id="highContrast" type="checkbox"> High contrast UI</label><label>Text size <select id="textSize"><option value="1">Standard</option><option value="1.15">Large</option><option value="1.3">Extra large</option></select></label><label>Touch controls <select id="touchMode"><option value="always">Always visible</option><option value="auto">Auto</option><option value="hidden">Hidden</option></select></label><label>Touch target size <select id="touchSize"><option value="standard">Standard</option><option value="large">Large</option></select></label><label><input id="leftHanded" type="checkbox"> Left-handed control layout</label><label>Performance <select id="performanceMode"><option value="auto">Auto</option><option value="quality">Quality</option><option value="battery">Battery saver</option></select></label><label><input id="orientationHintSetting" type="checkbox"> Show landscape hint on phones</label><label><input id="mute" type="checkbox"> Mute all audio</label><button id="settingsCloseBtn" class="primary" value="close">DONE</button></form></dialog>
+  <dialog id="helpDialog" class="pixel-dialog" aria-labelledby="helpTitle"><form method="dialog" class="dialog-inner wide"><p class="eyebrow">CONTROLS</p><h2 id="helpTitle">How to play</h2><div class="help-grid"><b>Move</b><span>WASD / arrows</span><b>Quick attack / fire</b><span>Z / A button</span><b>Guard / parry</b><span>X / B button</span><b>Interact</b><span>C / Enter</span><b>Charged heavy</b><span>Hold V / HEAVY, release</span><b>Change weapon</b><span>Q / E / WEAPON</span><b>Dodge</b><span>Space</span><b>Cast Sigil</b><span>R</span><b>Change Sigil</b><span>T</span><b>Sigil Codex</b><span>F</span><b>Change intensity</b><span>G or Codex</span><b>Manor map</b><span>M</span><b>Evidence archive</b><span>J / Pause → Archive</span><b>Records</b><span>K / Pause → Records</span><b>Pause</b><span>Esc</span></div><p class="help-note">Perception distortions are fictional and stay inside the game canvas/HUD. The game never deletes real saves, manipulates files, closes the browser, or imitates operating-system damage. Enable “Keep HUD values truthful” if you want all status values to remain exact.</p><button class="primary" value="close">CLOSE</button></form></dialog>
+
+  <dialog id="archiveDialog" class="pixel-dialog archive-dialog" aria-labelledby="archiveTitle"><div class="dialog-inner archive-wide"><p class="eyebrow">BLACKTHORN EVIDENCE ARCHIVE</p><h2 id="archiveTitle">Contradiction is evidence.</h2><p id="archiveCount" class="archive-count">0/87 EVIDENCE</p><div id="archiveFilters" class="archive-filters"><button type="button" data-filter="all" class="selected">ALL</button><button type="button" data-filter="document">DOCUMENTS</button><button type="button" data-filter="note">NOTES</button><button type="button" data-filter="recording">RECORDINGS</button><button type="button" data-filter="secret">SECRETS</button></div><div class="archive-layout"><div id="archiveList" class="archive-list"></div><article id="archiveDetail" class="archive-detail"><p class="archive-empty">Recover evidence by inspecting Blackthorn and its Memory Echoes.</p></article></div><button id="archiveCloseBtn" class="primary" type="button">RETURN</button></div></dialog>
+  <dialog id="sigilDialog" class="pixel-dialog sigil-dialog" aria-labelledby="sigilSelected"><div class="dialog-inner sigil-wide"><p class="eyebrow">SIGIL CODEX</p><h2 id="sigilSelected">BIND + VOID + I</h2><p id="sigilMeta" class="sigil-meta">VOID · STABILITY 14 · COOLDOWN 4.5s</p><p class="help-note">T cycles known formulas. R casts. Intensity changes effect, Stability cost and cooldown. The house recognises grammar, not button combinations.</p><div id="sigilIntensity" class="intensity-row"><span>INTENSITY</span><button type="button" data-intensity="1">I</button><button type="button" data-intensity="2">II</button><button type="button" data-intensity="3">III</button></div><div id="sigilGrid" class="sigil-grid"></div><button id="sigilCloseBtn" class="primary" type="button">RETURN TO GAME</button></div></dialog>
+
+  <dialog id="recordsDialog" class="pixel-dialog records-dialog" aria-labelledby="recordsTitle"><div class="dialog-inner records-wide"><p class="eyebrow">BLACKTHORN RECORDS</p><h2 id="recordsTitle">What the house has taught you.</h2><p id="recordsCount" class="archive-count">0 DISCOVERED</p><div id="recordsTabs" class="archive-filters"><button type="button" data-record-tab="achievements" class="selected">ACHIEVEMENTS</button><button type="button" data-record-tab="bestiary">BESTIARY</button></div><div id="recordsList" class="records-list"></div><button id="recordsCloseBtn" class="primary" type="button">RETURN</button></div></dialog>
+  <dialog id="creditsDialog" class="pixel-dialog credits-dialog" aria-labelledby="creditsTitle"><form method="dialog" class="dialog-inner wide"><p class="eyebrow">CREDITS</p><h2 id="creditsTitle">Blackthorn 404: The Unremembered</h2><div class="credits-copy"><p><b>Created by I. Roig</b><br>Universo 404</p><p>Original game design, narrative direction and project direction · I. Roig</p><p>Technical foundation · Pocket 404 DX, extensively evolved into a standalone Blackthorn engine.</p><p>Runtime · HTML5 Canvas 2D · Vanilla JavaScript · CSS · Web Audio · PWA.</p><p>All in-game graphics, writing, systems and procedural audio in this release are original to this project. No commercial game assets are included.</p><p class="credits-thanks">Thank you for remembering the contradictions.</p></div><button id="creditsCloseBtn" class="primary" value="close">RETURN</button></form></dialog>
+  <dialog id="endingDialog" class="ending-dialog" aria-labelledby="endingTitle"><div class="ending-shell"><div class="ending-noise" aria-hidden="true"></div><p id="endingKicker" class="ending-kicker">ENDING</p><h2 id="endingTitle">BLACKTHORN REMEMBERS</h2><div id="endingPage" class="ending-page"></div><div id="endingRequirements" class="ending-requirements hidden"></div><div class="ending-footer"><span id="endingProgress">MEMORY 1 / 4</span><button id="endingNextBtn" class="primary" type="button">CONTINUE</button></div></div></dialog>
+  <dialog id="completeDialog" class="pixel-dialog" aria-labelledby="completeTitle"><div class="dialog-inner wide"><p id="completeKicker" class="eyebrow">MEMORY STABILIZED</p><h2 id="completeTitle">Blackthorn remembers.</h2><p id="completeText">A new layer of the house has become stable.</p><button id="completeCloseBtn" class="primary" type="button">RETURN</button></div></dialog>
+
+  <script type="module" src="js/app.js?v=1.1.1"></script>
+  <div id="pwaToast" class="pwa-toast hidden" role="status" aria-live="polite"></div>
+</body>
+</html>
