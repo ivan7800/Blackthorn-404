@@ -22,21 +22,21 @@ export class PixelArt{
     let [key,cell]=SCENE_ART[room.era]||['manor',0];
     if(room.id?.startsWith('final-'))[key,cell]=['final',0];
     else if(room.enemies?.some(e=>e.type==='bell-boss'))[key,cell]=['final',1];
-    else if(room.decor==='library'||room.decor==='archive')[key,cell]=['final',2];
-    else if(room.decor==='garden')[key,cell]=['final',3];
+    else if(room.era==='2026'&&(room.decor==='library'||room.decor==='archive'))[key,cell]=['final',2];
+    else if(room.era==='2026'&&room.decor==='garden')[key,cell]=['final',3];
     if(!this.ready(key))return false;
     const im=this.images[key];
     if(key==='manor')c.drawImage(im,0,0,im.naturalWidth,im.naturalHeight,0,0,320,180);
     else c.drawImage(im,(cell%2)*im.naturalWidth/2,Math.floor(cell/2)*im.naturalHeight/2,im.naturalWidth/2,im.naturalHeight/2,0,0,320,180);
     return true;
   }
-  sprite(c,key,cell,x,y,w,h,{flip=false,phase=0,flash=false,windup=false}={}){
+  sprite(c,key,cell,x,y,w,h,{flip=false,phase=0,flash=false,windup=false,reduceMotion=false}={}){
     if(!this.ready(key))return false;
     const im=this.images[key],cw=im.naturalWidth/3,ch=im.naturalHeight/3;
     const originalX=x;c.save();
     // Pixel-locked bob and squash keep the authored silhouette intact.
-    const bob=phase==='walk'?Math.round(Math.sin(performance.now()/85)*1):phase==='idle'?Math.round(Math.sin(performance.now()/390)):0;
-    const lean=phase==='attack'?2:phase==='hurt'?-2:0;
+    const bob=reduceMotion?0:phase==='walk'?Math.round(Math.sin(performance.now()/85)):phase==='idle'?Math.round(Math.sin(performance.now()/390)):0;
+    const lean=reduceMotion?0:phase==='attack'?2:phase==='hurt'?-2:0;
     if(flip){c.translate(Math.round(x+w),0);c.scale(-1,1);x=0;}
     if(flash)c.filter='brightness(1.8)';
     c.drawImage(im,(cell%3)*cw,Math.floor(cell/3)*ch,cw,ch,Math.round(x+lean),Math.round(y+bob),Math.round(w),Math.round(h));

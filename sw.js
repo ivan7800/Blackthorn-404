@@ -1,7 +1,7 @@
-const CACHE='blackthorn404-v1.2.0-pixel-art';
-const SHELL=['./','./index.html','./css/app.css?v=1.2.0','./js/bundle.js?v=1.2.0','./js/combat-animation-hotfix.js?v=1.2.0','./manifest.webmanifest?v=1.2.0','./assets/icons/icon.svg','./assets/icons/icon-192.png','./assets/icons/icon-512.png','./assets/art/title_hero.jpg','./assets/art/scene_manor_detail.png','./assets/art/protagonists.png','./assets/art/bosses.png','./assets/art/enemy-families.png','./assets/art/eras-ancient.png','./assets/art/eras-modern.png','./assets/art/eras-final.png','./assets/art/scene_medieval.png','./assets/art/scene_ancient.png','./assets/art/scene_modern.png','./assets/art/scene_boss.png','./assets/art/scene_void.png'];
+const CACHE='blackthorn404-v1.2.1-pixel-art';
+const SHELL=['./','./index.html','./css/app.css?v=1.2.1','./js/bundle.js?v=1.2.1','./manifest.webmanifest?v=1.2.1','./assets/icons/icon.svg','./assets/icons/icon-192.png','./assets/icons/icon-512.png','./assets/art/title_hero.jpg','./assets/art/scene_manor_detail.png','./assets/art/protagonists.png','./assets/art/bosses.png','./assets/art/enemy-families.png','./assets/art/eras-ancient.png','./assets/art/eras-modern.png','./assets/art/eras-final.png','./assets/art/scene_medieval.png','./assets/art/scene_ancient.png','./assets/art/scene_modern.png','./assets/art/scene_boss.png','./assets/art/scene_void.png'];
 const OPTIONAL=[];
-const CORE_RE=/\/(?:js\/bundle\.js|js\/combat-animation-hotfix\.js|css\/app\.css|manifest\.webmanifest)$/;
+const CORE_RE=/\/(?:js\/bundle\.js|css\/app\.css|manifest\.webmanifest)$/;
 self.addEventListener('install',event=>event.waitUntil((async()=>{const c=await caches.open(CACHE);await c.addAll(SHELL);await Promise.allSettled(OPTIONAL.map(x=>c.add(x)));await self.skipWaiting();})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('blackthorn404-')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim();})()));
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});
