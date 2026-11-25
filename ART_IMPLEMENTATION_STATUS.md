@@ -21,7 +21,7 @@ Recursos generados expresamente para este proyecto mediante una herramienta de g
 
 `js/pixel-art.js` carga las imágenes y selecciona celdas por época, familia y jefe. `js/engine.js` usa el nuevo arte dentro de la campaña, conserva hitboxes y mantiene los métodos anteriores como alternativa durante la carga. `tools/build_bundle.py` incorpora el módulo al bundle. El mapa histórico muestra salas descubiertas y conexiones conocidas. La PWA precarga los recursos.
 
-La revisión posterior corrigió la clave `395 CE`, limitó los fondos especiales de archivo y jardín a la mansión, fijó las posiciones del mapa histórico para que no salten al cambiar de sala e integró el efecto de combate en el motor. Se eliminó el script que sobrescribía `drawPlayer`; el golpe cuerpo a cuerpo se señala en el rectángulo de colisión real. La señal circular de cuerpo a cuerpo de los enemigos usa el alcance de 25 unidades del motor. La opción de movimiento reducido detiene la oscilación del atlas.
+La revisión posterior corrigió la clave `395 CE`, limitó los fondos especiales de archivo y jardín a la mansión, fijó las posiciones del mapa histórico para que no salten al cambiar de sala e integró el efecto de combate en el motor. Se eliminó el script que sobrescribía `drawPlayer`; el golpe cuerpo a cuerpo se señala en el rectángulo de colisión real. La señal circular de cuerpo a cuerpo de los enemigos usa el alcance de 25 unidades del motor. El jefe de fase tres permanece visible durante el aviso de ataque. La opción de movimiento reducido detiene la oscilación del atlas. Los 42 identificadores de decoración tienen piezas de arquitectura; esto no garantiza que las 108 composiciones sean visualmente únicas.
 
 ## Cobertura y límites reales
 
