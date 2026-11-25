@@ -2,7 +2,7 @@
 from pathlib import Path
 import re
 ROOT=Path(__file__).resolve().parents[1]
-order=['data.js','save.js','perception.js','combat.js','sigils.js','audio.js','engine.js','app.js']
+order=['data.js','save.js','perception.js','combat.js','sigils.js','audio.js','pixel-art.js','engine.js','app.js']
 out=['/* Blackthorn 404 generated static bundle. Do not edit directly. */','"use strict";']
 for name in order:
     text=(ROOT/'js'/name).read_text(encoding='utf-8')
