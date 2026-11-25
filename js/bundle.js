@@ -998,7 +998,7 @@ class PixelArt{
   scene(c,room){
     let [key,cell]=SCENE_ART[room.era]||['manor',0];
     if(room.id?.startsWith('final-'))[key,cell]=['final',0];
-    else if(room.boss)[key,cell]=['final',1];
+    else if(room.enemies?.some(e=>e.type==='bell-boss'))[key,cell]=['final',1];
     else if(room.decor==='library'||room.decor==='archive')[key,cell]=['final',2];
     else if(room.decor==='garden')[key,cell]=['final',3];
     if(!this.ready(key))return false;
@@ -1421,6 +1421,7 @@ class BlackthornEngine{
     }
     const p=this.player,x=p.x-5,y=p.y-10,step=Math.floor(this.roomTime*8)%2;c.save();c.fillStyle='rgba(0,0,0,.55)';c.beginPath();c.ellipse(p.x+5,p.y+p.h+3,10,4,0,0,Math.PI*2);c.fill();const hurt=p.hitFlash>0;c.fillStyle=hurt?'#f6ddce':'#3a3035';c.fillRect(x+6,y+9,9,12);c.fillStyle='#1a171b';c.fillRect(x+5,y+13,11,9);c.fillStyle='#6f2227';c.fillRect(x+4,y+12,4,12);c.fillStyle='#8d3031';c.fillRect(x+7,y+17,8,7);c.fillStyle='#bcb1a1';c.fillRect(x+8,y+3,6,6);c.fillStyle='#342a2c';c.fillRect(x+7,y+2,8,3);c.fillStyle='#0b0a0c';c.fillRect(x+8,y+4,2,1);c.fillRect(x+12,y+4,2,1);c.fillStyle='#625a57';c.fillRect(x+6,y+9,2,9);c.fillRect(x+14,y+10,2,8);c.fillStyle='#171417';c.fillRect(x+7,y+21+(step?1:0),3,5);c.fillRect(x+12,y+21+(step?0:1),3,5);c.strokeStyle='#d0c2aa';if(p.facing==='left'){c.beginPath();c.moveTo(x+7,y+14);c.lineTo(x-3,y+17);c.stroke();}else if(p.facing==='right'){c.beginPath();c.moveTo(x+15,y+14);c.lineTo(x+26,y+17);c.stroke();}else if(p.facing==='up'){c.beginPath();c.moveTo(x+14,y+10);c.lineTo(x+17,y-2);c.stroke();}else{c.beginPath();c.moveTo(x+8,y+17);c.lineTo(x+5,y+29);c.stroke();}if(this.guard){c.strokeStyle=this.parryTimer>0?'#f0c27c':'#9d8e78';c.lineWidth=2;c.beginPath();c.arc(p.x+5,p.y+8,11,-1.2,1.2);c.stroke();}if(this.charging){const q=this.weapon.chargeMax?Math.min(1,this.chargeTime/this.weapon.chargeMax):0;c.strokeStyle=`rgba(216,103,67,${.45+.4*q})`;c.strokeRect(x-2-q*2,y-2-q*2,26+q*4,32+q*4);}c.restore();}
   drawEnemy(c,e,fx){
+    if(e.boss&&this.bossPhase===3&&this.bossVulnerable<=0&&Math.floor(this.roomTime*5)%4!==0&&fx.tier<3)return;
     { const boss=!!e.boss,cell=boss?(BOSS_ART[e.type]??0):(FAMILY_ART[e.family]??0);
     const w=boss?Math.max(42,e.w*1.8):Math.max(26,e.w*1.8),h=boss?Math.max(52,e.h*1.9):Math.max(34,e.h*1.8);
     const x=e.x+e.w/2-w/2,y=e.y+e.h-h;

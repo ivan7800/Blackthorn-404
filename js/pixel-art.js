@@ -21,7 +21,7 @@ export class PixelArt{
   scene(c,room){
     let [key,cell]=SCENE_ART[room.era]||['manor',0];
     if(room.id?.startsWith('final-'))[key,cell]=['final',0];
-    else if(room.boss)[key,cell]=['final',1];
+    else if(room.enemies?.some(e=>e.type==='bell-boss'))[key,cell]=['final',1];
     else if(room.decor==='library'||room.decor==='archive')[key,cell]=['final',2];
     else if(room.decor==='garden')[key,cell]=['final',3];
     if(!this.ready(key))return false;
