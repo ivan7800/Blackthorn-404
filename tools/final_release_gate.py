@@ -38,7 +38,8 @@ check(not refs,'html_local_refs_exist')
 manifest=json.loads((ROOT/'manifest.webmanifest').read_text())
 check(manifest.get('start_url')=='./' and manifest.get('scope')=='./' and manifest.get('id')=='./','manifest_relative_scope')
 check(all((ROOT/(i['src'][2:] if i['src'].startswith('./') else i['src'])).exists() for i in manifest.get('icons',[])),'manifest_icons_exist')
-sw=(ROOT/'sw.js').read_text();check("CACHE='blackthorn404-v1.1.1-release'" in sw,'final_cache_namespace');check("event.request.mode==='navigate'" in sw and "k.startsWith('blackthorn404-')" in sw and 'SKIP_WAITING' in sw,'sw_update_offline_strategy')
+sw=(ROOT/'sw.js').read_text();asset_version=re.search(r'bundle\.js\?v=([0-9.]+)',html);asset_version=asset_version.group(1) if asset_version else None
+check(bool(asset_version) and f"CACHE='blackthorn404-v{asset_version}-" in sw and all(f'{path}?v={asset_version}' in html and f'{path}?v={asset_version}' in sw for path in ['css/app.css','js/bundle.js','manifest.webmanifest']),'final_cache_namespace');check("event.request.mode==='navigate'" in sw and "k.startsWith('blackthorn404-')" in sw and 'SKIP_WAITING' in sw,'sw_update_offline_strategy')
 data=(ROOT/'js/data.js').read_text();check("VERSION='1.1.1'" in data and 'SAVE_SCHEMA=12' in data,'version_schema');check('export const BESTIARY_RANKS=' in data and 'export function bestiaryRank' in data,'bestiary_data')
 # Exact bestiary distribution derived from source IDs.
 block=data.split('export const ENEMY_TYPES={',1)[1].split('};\n\nexport const BESTIARY_RANKS',1)[0]

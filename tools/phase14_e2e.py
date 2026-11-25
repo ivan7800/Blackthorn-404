@@ -32,7 +32,7 @@ with sync_playwright() as p:
     manifest=json.loads((ROOT/'manifest.webmanifest').read_text())
     assert manifest['start_url']=='./' and manifest['scope']=='./' and manifest['display']=='standalone' and 'fullscreen' in manifest['display_override'] and manifest['id']=='./'; ok('manifest_installability_fields')
     sw=(ROOT/'sw.js').read_text()
-    assert "CACHE='blackthorn404-v1.1.1-release'" in sw and "event.request.mode==='navigate'" in sw and 'Promise.allSettled' in sw and "k.startsWith('blackthorn404-')" in sw and 'SKIP_WAITING' in sw; ok('service_worker_network_first_and_cache_migration')
+    assert "CACHE='blackthorn404-v" in sw and "event.request.mode==='navigate'" in sw and 'Promise.allSettled' in sw and "k.startsWith('blackthorn404-')" in sw and 'SKIP_WAITING' in sw; ok('service_worker_network_first_and_cache_migration')
     # Settings behavior and persistence.
     page.locator('#settingsBtn').click();page.wait_for_timeout(10)
     page.locator('#touchSize').select_option('large');page.locator('#leftHanded').check();page.locator('#performanceMode').select_option('battery');page.locator('#touchMode').select_option('hidden');page.wait_for_timeout(10)

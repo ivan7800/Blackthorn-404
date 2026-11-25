@@ -7,8 +7,11 @@ required=['index.html','manifest.webmanifest','sw.js','css/app.css','js/bundle.j
 for f in required:
     if not (ROOT/f).exists(): errors.append(f'missing:{f}')
 html=(ROOT/'index.html').read_text(encoding='utf-8')
-for token in ['id="newGameBtn"','id="continueBtn"','id="gameCanvas"','data-control="attack"','data-control="heavy"','data-control="weapon"','data-control="sigil"','data-control="sigils"','id="sigilDialog"','id="sigilIntensity"','id="truthfulHud"','manifest.webmanifest?v=1.1.1','bundle.js?v=1.1.1','id="archiveDialog"','id="pauseArchiveBtn"','id="endingDialog"','id="endingNextBtn"','id="newGamePlusBtn"']:
+asset_version=re.search(r'bundle\.js\?v=([0-9.]+)',html)
+asset_version=asset_version.group(1) if asset_version else None
+for token in ['id="newGameBtn"','id="continueBtn"','id="gameCanvas"','data-control="attack"','data-control="heavy"','data-control="weapon"','data-control="sigil"','data-control="sigils"','id="sigilDialog"','id="sigilIntensity"','id="truthfulHud"','id="archiveDialog"','id="pauseArchiveBtn"','id="endingDialog"','id="endingNextBtn"','id="newGamePlusBtn"']:
     if token not in html: errors.append(f'html_missing:{token}')
+if not asset_version or any(f'{path}?v={asset_version}' not in html for path in ['manifest.webmanifest','css/app.css','js/bundle.js']): errors.append('html_asset_versions_mismatch')
 for f in ['js/bundle.js','js/app.js','js/engine.js','js/data.js','js/save.js','js/perception.js','js/audio.js','js/sigils.js','sw.js']:
     r=subprocess.run(['node','--check',str(ROOT/f)],capture_output=True,text=True)
     if r.returncode: errors.append(f'syntax:{f}:{r.stderr.strip()}')
@@ -16,8 +19,8 @@ manifest=json.loads((ROOT/'manifest.webmanifest').read_text())
 if not manifest.get('start_url','').startswith('./'): errors.append('manifest_start_url_not_relative')
 if not manifest.get('scope','').startswith('./'): errors.append('manifest_scope_not_relative')
 sw=(ROOT/'sw.js').read_text(encoding='utf-8')
-if "CACHE='blackthorn404-v1.1.1-release'" not in sw: errors.append('sw_cache_version')
-for token in ['app.css?v=1.1.1','bundle.js?v=1.1.1','manifest.webmanifest?v=1.1.1','assets/art/title_hero.jpg','assets/art/scene_manor.png','assets/art/scene_void.png']:
+if not asset_version or f"CACHE='blackthorn404-v{asset_version}-" not in sw: errors.append('sw_cache_version')
+for token in [f'app.css?v={asset_version}',f'bundle.js?v={asset_version}',f'manifest.webmanifest?v={asset_version}','assets/art/title_hero.jpg','assets/art/scene_manor_detail.png','assets/art/scene_void.png','assets/art/protagonists.png','assets/art/bosses.png','assets/art/enemy-families.png']:
     if token not in sw: errors.append(f'sw_missing:{token}')
 for token in ['PHASE_10_REPORT.md','PHASE_11_REPORT.md','QA_REPORT.md']:
     if token in sw: errors.append(f'sw_should_not_precache_qa_doc:{token}')
